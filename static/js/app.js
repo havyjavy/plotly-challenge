@@ -3,7 +3,8 @@ function dataBox(sample) {
     d3.json("samples.json").then((importedData) => {
         console.log(importedData);
         var data = importedData.metadata;
-        console.log(data)
+        //console.log(data)
+        generateBarChart(importedData.samples.find(x => x.id == sample));
 
         var idFilter = data.filter(metaData => metaData.id == sample)[0];
         var Demographics = d3.select('#sample-metadata');
@@ -16,6 +17,63 @@ function dataBox(sample) {
     });
 }
 
+
+function generateBarChart(sampleObj) {
+    var otus = sampleObj.otu_ids.slice(0, 10);
+    var sample_values = sampleObj.sample_values.slice(0, 10);
+
+    sample_values = sample_values.reverse();
+    otus = otus.reverse();
+
+    otus = otus.map(x => "OTUS " + x);
+
+
+    var trace1 = {
+        x: sample_values,
+        y: otus,
+        xaxis: 'x1',
+        yaxis: 'y1',
+        type: 'bar',
+        marker: {
+            color: 'rgba(50,171,96,0.6)',
+            line: {
+                color: 'rgba(50,171,96,1.0)',
+                width: 7
+            }
+        },
+        orientation: 'h'
+    };
+
+
+    var data = [trace1];
+
+    var layout = {
+        legend: {
+            x: 0.029,
+            y: 1.238,
+            font: {
+                size: 10
+            }
+        },
+        bargap: 15,
+        margin: {
+            l: 100,
+            r: 20,
+            t: 220,
+            b: 80
+        },
+        width: 600,
+        height: 600,
+        paper_bgcolor: 'rgb(248,248,255)',
+        plot_bgcolor: 'rgb(248,248,255)'
+    };
+
+
+    Plotly.newPlot('bar', data, layout);
+
+
+
+}
 function dropDown() {
     var selectID = d3.select("#selDataset");
     d3.json("samples.json").then((importedData) => {
